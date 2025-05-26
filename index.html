@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Flat World Map</title>
+  <title>Static Flat World Map</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -12,7 +12,7 @@
   />
   
   <style>
-    body, html { margin: 0; padding: 0; height: 100%; }
+    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
     #map { width: 100%; height: 100vh; }
   </style>
 </head>
@@ -26,12 +26,25 @@
 ></script>
 
 <script>
-  var map = L.map('map').setView([20, 0], 2);
+  var map = L.map('map', {
+    center: [20, 0],
+    zoom: 2,
+    dragging: false,      // disable dragging
+    zoomControl: false,   // disable zoom buttons
+    scrollWheelZoom: false, // disable zooming with the mouse wheel
+    doubleClickZoom: false, // disable zooming on double click
+    boxZoom: false,         // disable zooming with box drag
+    keyboard: false         // disable keyboard controls
+  });
 
+  // Add OpenStreetMap tiles
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 5,
     attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
+
+  // Lock map to current bounds to remove white space
+  map.setMaxBounds(map.getBounds());
 </script>
 
 </body>
