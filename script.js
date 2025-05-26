@@ -4,11 +4,24 @@ const map = new maplibregl.Map({
     style: 'https://demotiles.maplibre.org/style.json', // Default MapLibre style
     center: [0, 20], // [Longitude, Latitude]
     zoom: 1.5,
-    pitch: 30,
+    pitch: 0,
     bearing: 0,
-    antialias: true
+    antialias: true,
+    maxZoom: 10,
+    minZoom: 1.5
 });
 
+const map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://demotiles.maplibre.org/style.json',
+    center: [0, 20],
+    zoom: 1.5,
+    pitch: 0,
+    bearing: 0,
+    antialias: true,
+    maxZoom: 10,
+    minZoom: 1.5
+});
 
 // Sample demand data with country colors and links
 const countryData = {
