@@ -1,8 +1,8 @@
 // Create the Map
 const map = new maplibregl.Map({
     container: 'map',
-    style: 'https://demotiles.maplibre.org/style.json', // Default MapLibre style
-    center: [0, 20], // [Longitude, Latitude]
+    style: 'https://demotiles.maplibre.org/style.json',
+    center: [0, 20],
     zoom: 1.5,
     pitch: 0,
     bearing: 0,
@@ -11,13 +11,19 @@ const map = new maplibregl.Map({
     minZoom: 1.5
 });
 
+// Restrict the map view so user cannot pan below latitude -60 (hiding Antarctica)
+map.setMaxBounds([
+    [-180, -60], // southwest [lng, lat]
+    [180, 85]    // northeast [lng, lat]
+]);
+
 
 // Sample demand data with country colors and links
 const countryData = {
     "Albania": { "color": "#B2D8B2", "link": "https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?name=&defaultValue=false&viewType=TABLE&areaType=CTY&atch=false&dateTime.dateTime=13.03.2025+00:00|CET|DAY&biddingZone.values=CTY|10YAL-KESH-----5!CTY|10YAL-KESH-----5&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2) "},
     "Canada": { "color": "#B2D8B2", "link": "https://energy-information.canada.ca/en/resources/high-frequency-electricity-data"},
     "Argentina": { "color": "#B2D8B2", "link": "https://cammesaweb.cammesa.com/" }, 
-    "Brazil": { "color": "#0D400D", "link": "https://dados.ons.org.br/dataset/curva-carga" },
+    "Brazil": { "color": "B2D8B2", "link": "https://dados.ons.org.br/dataset/curva-carga" },
     "Chile": { "color": "#0D400D", "link": "https://www.coordinador.cl/operacion/graficos/operacion-real/demanda-real/" },    
     "Peru": { "color": "#0D400D", "link": "https://www.coes.org.pe/Portal/portalinformacion/demanda" }
 };
