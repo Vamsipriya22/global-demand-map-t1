@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>3D Globe with Country Borders</title>
+  <title>3D Globe with Country Borders and Blue Ocean</title>
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Cesium.js"></script>
   <link href="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
   <style>
@@ -18,12 +18,14 @@
 <body>
   <div id="cesiumContainer"></div>
   <script>
-    // Initialize Cesium Viewer
     const viewer = new Cesium.Viewer('cesiumContainer', {
       baseLayerPicker: false,
       animation: false,
       timeline: false
     });
+
+    // Set globe base color (ocean color)
+    viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString('#87CEEB'); // light sky blue
 
     // Load GeoJSON country borders
     const dataSource = new Cesium.GeoJsonDataSource();
