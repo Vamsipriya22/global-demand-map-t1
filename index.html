@@ -5,12 +5,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Leaflet CSS -->
+  <!-- Leaflet CSS (using jsDelivr CDN) -->
   <link
     rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-o9N1jzf3MXXCqp2chP0jyx0U02X1Ys2rG2xc38BJf+8="
-    crossorigin=""
+    href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
   />
   
   <style>
@@ -22,18 +20,14 @@
 
 <div id="map"></div>
 
-<!-- Leaflet JS -->
+<!-- Leaflet JS (using jsDelivr CDN) -->
 <script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha256-oS3vJWv+0UjzBf8dc2Rg+g+QtaH1iLD7E1G9E8y/5U8="
-  crossorigin=""
+  src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
 ></script>
 
 <script>
-  // Initialize the map and set its view to the world center with zoom level 2
   var map = L.map('map').setView([20, 0], 2);
 
-  // Add OpenStreetMap tiles (flat Mercator projection)
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 5,
     attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
