@@ -1,32 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>MapLibre Flat Map</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
-<style>
-  body, html { margin: 0; padding: 0; height: 100%; }
-  #map { width: 100%; height: 100vh; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simple MapLibre World Map</title>
+  <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
+  <style>
+    body, html { margin: 0; padding: 0; height: 100%; }
+    #map { width: 100%; height: 100vh; }
+  </style>
 </head>
 <body>
-<div id="map"></div>
-<script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
-<script>
-  const map = new maplibregl.Map({
-    container: 'map',
-    style: 'https://demotiles.maplibre.org/style.json',
-    center: [0, 20],
-    zoom: 1.5,
-    pitch: 0,
-    bearing: 0,
-    maxBounds: [[-180, -85], [180, 85]],
-    maxZoom: 5,
-    minZoom: 1
-  });
+  <div id="map"></div>
 
-  map.addControl(new maplibregl.NavigationControl());
-</script>
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+  <script>
+    const map = new maplibregl.Map({
+      container: 'map', // id of the container div
+      style: 'https://demotiles.maplibre.org/style.json', // free MapLibre style
+      center: [0, 20], // Center map near Africa
+      zoom: 1.5,      // Zoom level
+      maxBounds: [[-180, -85], [180, 85]], // lock map inside world bounds
+      minZoom: 1,
+      maxZoom: 5,
+      pitch: 0,
+      bearing: 0
+    });
+
+    // Add zoom control buttons (+ and -)
+    map.addControl(new maplibregl.NavigationControl());
+  </script>
 </body>
 </html>
