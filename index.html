@@ -85,7 +85,7 @@
   Cesium.GeoJsonDataSource.load('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json', {
     stroke: Cesium.Color.YELLOW,
     strokeWidth: 1,
-    fill: Cesium.Color.DARKGRAY.withAlpha(0.9) // DARK GRAY by default
+    fill: Cesium.Color.fromCssColorString("#808080").withAlpha(0.8) // DARK GRAY by default
   }).then(dataSource => {
     viewer.dataSources.add(dataSource);
     viewer.zoomTo(dataSource);
