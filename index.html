@@ -33,7 +33,7 @@
     "Belgium": { "color": "#267326", "link": "https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?name=&defaultValue=false&viewType=TABLE&areaType=CTY&atch=false&dateTime.dateTime=13.03.2025+00:00|CET|DAY&biddingZone.values=CTY|10YBE----------2!CTY|10YBE----------2&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2) "},
     "Bosnia and Herzegovina": { "color": "#67B367", "link": "https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?name=&defaultValue=false&viewType=TABLE&areaType=CTY&atch=false&dateTime.dateTime=13.03.2025+00:00|CET|DAY&biddingZone.values=CTY|10YBA-JPCC-----D!CTY|10YBA-JPCC-----D&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2) "},
     "Canada": { "color": "#B2D8B2", "link": "https://energy-information.canada.ca/en/resources/high-frequency-electricity-data" },
-    "Argentina": { "color": "#B2D8B2", "link": "https://cammesaweb.cammesa.com/" },
+    "Australia": { "color": "#B2D8B2", "link": "https://cammesaweb.cammesa.com/" },
     "Brazil": { "color": "#0D400D", "link": "https://dados.ons.org.br/dataset/curva-carga" },
     "Chile": { "color": "#0D400D", "link": "https://www.coordinador.cl/operacion/graficos/operacion-real/demanda-real/" },
     "Peru": { "color": "#0D400D", "link": "https://www.coes.org.pe/Portal/portalinformacion/demanda" }
@@ -62,7 +62,7 @@
           entity.properties.link = countryData[name].link;
         } else {
           // Unknown country: dark gray fill
-          entity.polygon.material = Cesium.Color.DARKGRAY.withAlpha(0.9);
+          entity.polygon.material = Cesium.Color.DARKGRAY.withAlpha(1.0);
           entity.properties.link = null;
         }
         entity.polygon.outline = true;
