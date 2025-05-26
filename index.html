@@ -1,14 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Clickable Globe Test</title>
-  <link href="style.css" rel="stylesheet" />
-  <link href="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+<meta charset="UTF-8" />
+<title>Interactive Colored Globe</title>
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Cesium.js"></script>
+<link href="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+<style>
+  html, body, #cesiumContainer {
+    width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+  }
+</style>
 </head>
 <body>
-  <div id="cesiumContainer"></div>
-  <script src="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Cesium.js"></script>
-  <script src="script.js"></script>
+<div id="cesiumContainer"></div>
+<script>
+  const viewer = new Cesium.Viewer('cesiumContainer', {
+    baseLayerPicker: false,
+    animation: false,
+    timeline: false,
+    imageryProvider: false,   // No imagery base map
+    globe: new Cesium.Globe(Cesium.Ellipsoid.WGS84)
+  });
+
+  // Blue ocean background
+  viewer.scene.globe.baseColor = Cesium.Color.SKYBLUE;
+  viewer.scene.globe.depthTestAgainstTerrain = true;
+
+  // Map of countries with their colors and URLs
+  const countryData = {
+    "Albania": {
+      color: "#B2D8B2",
+      link: "https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?name=&defaultValue=false&viewType=TABLE&areaType=CTY&atch=false&dateTime.dateTime=13.03.2025+00:00|CET|DAY&biddingZone.values=CTY|10YAL-KESH-----5!CTY|10YAL-KESH-----5&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2)"
+    },
+    "France": {
+      color: "#FFCC99",
+      link: "https://example.com/france"
+    },
+    "Germany": {
+      color: "#99CCFF",
+      link: "https://example.com/germany"
+    }
+    // Add more countries here if needed
+  };
+
+  // Load the GeoJSON for countries
+  Cesium.GeoJsonDataSource.load('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json', {
+    stroke: Cesium.Color.YELLOW,
+    strokeWidth: 1,
+    fill: Cesium.Color.WHITE  // This will be overridden per country below
+  }).then(dataSource => {
+    viewer.dataSources.add(dataSource);
+    viewer.zoomTo(dataSource);
+
+    // Assign colors and links
+    dataSource.entities.values.forEach(entity => {
+      const name = entity.properties.NAME?.getValue() || entity.properties.name?.getValue() || entity.name;
+      if (entity.polygon) {
+        if (name && countryData[name]) {
+          const c = countryData[name].color;
+          entity.polygon.material = Cesium.Color.fromCssColorString(c).withAlpha(1.0); // full opacity
+          entity.polygon.outline = true;
+          entity.polygon.outlineColor = Cesium.Color.YELLOW;
+          entity.properties.link = countryData[name].link;
+        } else {
+          // Default color for countries without specific data
+          entity.polygon.material = Cesium.Color.LIGHTGRAY.withAlpha(0.5);
+          entity.polygon.outline = true;
+          entity.polygon.outlineColor = Cesium.Color.YELLOW;
+        }
+      }
+    });
+
+    // Add click handler to open link on country click
+    const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+    handler.setInputAction(click => {
+      const picked = viewer.scene.pick(click.position);
+      if (Cesium.defined(picked) && picked.id && picked.id.properties && picked.id.properties.link) {
+        const link = picked.id.properties.link.getValue();
+        if (link) {
+          window.open(link, '_blank');
+        }
+      }
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+  }).otherwise(error => {
+    console.error('Error loading GeoJSON:', error);
+  });
+</script>
 </body>
 </html>
