@@ -3,33 +3,107 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MapLibre MaxBounds Example</title>
+  <title>Interactive World Map</title>
   <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
   <style>
-    body, html { margin: 0; padding: 0; height: 100%; }
-    #map { width: 100%; height: 100vh; }
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+    }
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+    .maplibregl-popup {
+      max-width: 200px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
-  <div id="map"></div>
-  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
-  <script>
-    const map = new maplibregl.Map({
-      container: 'map',
-      style: 'https://demotiles.maplibre.org/style.json',
-      center: [0, 20],
-      zoom: 1.5,
-      pitch: 0,
-      bearing: 0,
-      antialias: true,
-      maxZoom: 10,
-      minZoom: 1.5
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+<script>
+  const map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://demotiles.maplibre.org/style.json',
+    center: [0, 20],
+    zoom: 1.5,
+    pitch: 0,
+    bearing: 0,
+    maxZoom: 10,
+    minZoom: 1.5,
+    antialias: true
+  });
+
+  // Limit map vertical bounds to hide Antarctica
+  map.setMaxBounds([
+    [-180, -60],  // Southwest (longitude, latitude)
+    [180, 85]     // Northeast
+  ]);
+
+  map.on('load', () => {
+    // Add GeoJSON source for countries
+    map.addSource('countries', {
+      'type': 'geojson',
+      'data': 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json'
     });
 
-    map.setMaxBounds([
-      [-180, -60], // southwest corner
-      [180, 85]    // northeast corner
-    ]);
-  </script>
+    // Add country fill layer
+    map.addLayer({
+      'id': 'country-fills',
+      'type': 'fill',
+      'source': 'countries',
+      'paint': {
+        'fill-color': '#088',
+        'fill-opacity': 0.4
+      }
+    });
+
+    // Add country borders
+    map.addLayer({
+      'id': 'country-borders',
+      'type': 'line',
+      'source': 'countries',
+      'paint': {
+        'line-color': '#fff',
+        'line-width': 1
+      }
+    });
+
+    // Change cursor on hover
+    map.on('mouseenter', 'country-fills', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', 'country-fills', () => {
+      map.getCanvas().style.cursor = '';
+    });
+
+    // Handle country clicks
+    map.on('click', 'country-fills', (e) => {
+      const countryName = e.features[0].properties.name;
+
+      // Example: Map country names to URLs - CHANGE THESE to your URLs
+      const countryLinks = {
+        'United States': 'https://vamsipriya22.github.io/global-demand-map-t1/us.html',
+        'India': 'https://vamsipriya22.github.io/global-demand-map-t1/india.html',
+        'Australia': 'https://vamsipriya22.github.io/global-demand-map-t1/australia.html',
+        'Brazil': 'https://vamsipriya22.github.io/global-demand-map-t1/brazil.html',
+        'China': 'https://vamsipriya22.github.io/global-demand-map-t1/china.html',
+        // Add your own mappings here
+      };
+
+      const url = countryLinks[countryName];
+
+      if (url) {
+        window.open(url, '_blank');  // Opens link in new tab
+      } else {
+        alert(`No page configured for ${countryName}`);
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
