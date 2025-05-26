@@ -18,7 +18,8 @@
   const viewer = new Cesium.Viewer('cesiumContainer', {
     baseLayerPicker: false,
     animation: false,
-    timeline: false
+    timeline: false,
+    terrainProvider: Cesium.createWorldTerrain()
   });
 
   // Set the background color of the viewer (around the globe)
@@ -59,7 +60,7 @@
       if (name && countryData[name]) {
         const cData = countryData[name];
         entity.properties.link = cData.link;
-        entity.polygon.material = Cesium.Color.fromCssColorString(cData.color).withAlpha(0.5);
+        entity.polygon.material = Cesium.Color.fromCssColorString(cData.color).withAlpha(1.0); // Fully opaque
         entity.polygon.outline = true;
         entity.polygon.outlineColor = Cesium.Color.YELLOW;
       } else {
