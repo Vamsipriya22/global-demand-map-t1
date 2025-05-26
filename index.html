@@ -18,7 +18,7 @@
     baseLayerPicker: false,
     animation: false,
     timeline: false,
-    imageryProvider: false,   // No imagery base map
+    imageryProvider: false,
     globe: new Cesium.Globe(Cesium.Ellipsoid.WGS84)
   });
 
@@ -28,10 +28,10 @@
 
   // Map of countries with their colors and URLs
   const countryData = {
-    "Canada": { "color": "#B2D8B2", "link": "https://energy-information.canada.ca/en/resources/high-frequency-electricity-data"},
-    "Argentina": { "color": "#B2D8B2", "link": "https://cammesaweb.cammesa.com/" }, 
+    "Canada": { "color": "#B2D8B2", "link": "https://energy-information.canada.ca/en/resources/high-frequency-electricity-data" },
+    "Argentina": { "color": "#B2D8B2", "link": "https://cammesaweb.cammesa.com/" },
     "Brazil": { "color": "#0D400D", "link": "https://dados.ons.org.br/dataset/curva-carga" },
-    "Chile": { "color": "#0D400D", "link": "https://www.coordinador.cl/operacion/graficos/operacion-real/demanda-real/" },    
+    "Chile": { "color": "#0D400D", "link": "https://www.coordinador.cl/operacion/graficos/operacion-real/demanda-real/" },
     "Peru": { "color": "#0D400D", "link": "https://www.coes.org.pe/Portal/portalinformacion/demanda" }
   };
 
@@ -39,7 +39,7 @@
   Cesium.GeoJsonDataSource.load('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json', {
     stroke: Cesium.Color.YELLOW,
     strokeWidth: 1,
-    fill: Cesium.Color.WHITE  // This will be overridden per country below
+    fill: Cesium.Color.LIGHTGRAY.withAlpha(0.7) // Light gray by default
   }).then(dataSource => {
     viewer.dataSources.add(dataSource);
     viewer.zoomTo(dataSource);
@@ -56,9 +56,10 @@
           entity.polygon.outlineColor = Cesium.Color.YELLOW;
           entity.properties.link = countryData[name].link;
         } else {
-          // Country not in our data; no color and no link
-          entity.polygon.material = Cesium.Color.TRANSPARENT;
-          entity.polygon.outline = false;
+          // Country not in our data; keep default light gray color and no link
+          entity.polygon.material = Cesium.Color.LIGHTGRAY.withAlpha(0.7);
+          entity.polygon.outline = true;
+          entity.polygon.outlineColor = Cesium.Color.YELLOW;
           entity.properties.link = null;
         }
       }
