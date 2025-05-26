@@ -4,11 +4,11 @@ const viewer = new Cesium.Viewer('cesiumContainer', {
   timeline: false
 });
 
-// Set background and ocean color
-viewer.scene.backgroundColor = Cesium.Color.BLACK;
+// Set background and globe base color
+viewer.scene.backgroundColor = Cesium.Color.SKYBLUE;  // Blue ocean
 viewer.scene.globe.baseColor = Cesium.Color.SKYBLUE;
 
-// Custom country data: colors and links
+// Define countries with custom colors and links
 const countryData = {
   "Albania": {
     color: "#B2D8B2",
@@ -24,7 +24,6 @@ const countryData = {
   }
 };
 
-// GeoJSON source for countries
 const geojsonUrl = 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json';
 
 Cesium.GeoJsonDataSource.load(geojsonUrl, {
@@ -48,8 +47,7 @@ Cesium.GeoJsonDataSource.load(geojsonUrl, {
       entity.polygon.material = Cesium.Color.fromCssColorString(cData.color).withAlpha(0.7);
       entity.polygon.outline = true;
       entity.polygon.outlineColor = Cesium.Color.YELLOW;
-      // Assign link as a ConstantProperty for Cesium
-      entity.properties.link = new Cesium.ConstantProperty(cData.link);
+      entity.properties.link = cData.link;
     } else {
       entity.polygon.material = Cesium.Color.GRAY.withAlpha(0.2);
       entity.polygon.outline = true;
@@ -57,17 +55,12 @@ Cesium.GeoJsonDataSource.load(geojsonUrl, {
     }
   });
 
-  // Add click handler to open country links
+  // Click handler to open links on country click
   const handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
   handler.setInputAction(click => {
     const pickedObject = viewer.scene.pick(click.position);
-    if (
-      Cesium.defined(pickedObject) &&
-      pickedObject.id &&
-      pickedObject.id.properties &&
-      pickedObject.id.properties.link
-    ) {
-      const link = pickedObject.id.properties.link.getValue();
+    if (Cesium.defined(pickedObject) && pickedObject.id && pickedObject.id.properties) {
+      const link = pickedObject.id.properties.link;
       if (link) {
         window.open(link, '_blank');
       }
