@@ -18,13 +18,18 @@
 <body>
 <div id="cesiumContainer"></div>
 <script>
-  // Initialize the Cesium Viewer
+  // Initialize Cesium Viewer
   const viewer = new Cesium.Viewer('cesiumContainer', {
     baseLayerPicker: false,
     animation: false,
     timeline: false,
-    terrainProvider: Cesium.createWorldTerrain()
+    imageryProvider: false, // Disable default imagery
+    globe: new Cesium.Globe(Cesium.Ellipsoid.WGS84)
   });
+
+  // Set ocean (globe base) color to blue
+  viewer.scene.globe.baseColor = Cesium.Color.SKYBLUE;
+  viewer.scene.globe.depthTestAgainstTerrain = true;
 
   // Country data with colors and links
   const countryData = {
@@ -32,7 +37,7 @@
       color: "#B2D8B2",
       link: "https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?name=&defaultValue=false&viewType=TABLE&areaType=CTY&atch=false&dateTime.dateTime=13.03.2025+00:00|CET|DAY&biddingZone.values=CTY|10YAL-KESH-----5!CTY|10YAL-KESH-----5&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2)"
     },
-    "Canada": {
+    "France": {
       color: "#FFCC99",
       link: "https://example.com/france"
     },
@@ -40,6 +45,7 @@
       color: "#99CCFF",
       link: "https://example.com/germany"
     }
+    // Add more countries as needed
   };
 
   // Load GeoJSON for countries
@@ -62,13 +68,13 @@
         entity.polygon.outlineColor = Cesium.Color.YELLOW;
         entity.properties.link = cData.link;
       } else {
-        entity.polygon.material = Cesium.Color.GRAY.withAlpha(0.2);
+        entity.polygon.material = Cesium.Color.GRAY.withAlpha(0.3);
         entity.polygon.outline = true;
-        entity.polygon.outlineColor = Cesium.Color.DARKGRAY;
+        entity.polygon.outlineColor = Cesium.Color.YELLOW;
       }
     });
 
-    // Click handler
+    // Click handler for opening country-specific links
     const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
     handler.setInputAction(function(click) {
       const pickedObject = viewer.scene.pick(click.position);
