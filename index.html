@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>3D Globe Example with CesiumJS</title>
+  <title>3D Globe with Country Borders</title>
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Cesium.js"></script>
   <link href="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
   <style>
@@ -20,16 +20,21 @@
   <script>
     // Initialize Cesium Viewer
     const viewer = new Cesium.Viewer('cesiumContainer', {
-      imageryProvider: new Cesium.IonImageryProvider({ assetId: 2 }), // Use basic imagery
       baseLayerPicker: false,
       animation: false,
       timeline: false
     });
 
-    // Optional: Disable user interaction for a static globe
-    viewer.scene.screenSpaceCameraController.enableRotate = true;
-    viewer.scene.screenSpaceCameraController.enableZoom = true;
-    viewer.scene.screenSpaceCameraController.enableLook = true;
+    // Load GeoJSON country borders (you can find public datasets on GitHub or data portals)
+    const dataSource = new Cesium.GeoJsonDataSource();
+    dataSource.load('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json', {
+      stroke: Cesium.Color.YELLOW,
+      fill: Cesium.Color.TRANSPARENT,
+      strokeWidth: 2
+    }).then(function(dataSource) {
+      viewer.dataSources.add(dataSource);
+      viewer.zoomTo(dataSource);
+    });
   </script>
 </body>
 </html>
