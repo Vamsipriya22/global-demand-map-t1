@@ -1,14 +1,16 @@
 const viewer = new Cesium.Viewer('cesiumContainer', {
   baseLayerPicker: false,
   animation: false,
-  timeline: false
+  timeline: false,
+  sceneModePicker: false,
 });
 
-// Set background and globe base color
-viewer.scene.backgroundColor = Cesium.Color.SKYBLUE;  // Blue ocean
+// Set blue background behind globe
+viewer.scene.backgroundColor = Cesium.Color.SKYBLUE;
+// Set globe base color (ocean color)
 viewer.scene.globe.baseColor = Cesium.Color.SKYBLUE;
 
-// Define countries with custom colors and links
+// Custom countries with colors and links
 const countryData = {
   "Albania": {
     color: "#B2D8B2",
@@ -44,18 +46,28 @@ Cesium.GeoJsonDataSource.load(geojsonUrl, {
 
     if (name && countryData[name]) {
       const cData = countryData[name];
-      entity.polygon.material = Cesium.Color.fromCssColorString(cData.color).withAlpha(0.7);
-      entity.polygon.outline = true;
-      entity.polygon.outlineColor = Cesium.Color.YELLOW;
+
+      // Some entities have polygons, some have multi-polygons
+      if (entity.polygon) {
+        entity.polygon.material = Cesium.Color.fromCssColorString(cData.color).withAlpha(0.7);
+        entity.polygon.outline = true;
+        entity.polygon.outlineColor = Cesium.Color.YELLOW;
+      } else if (entity.polygonHierarchy) {
+        entity.polygonHierarchy.material = Cesium.Color.fromCssColorString(cData.color).withAlpha(0.7);
+      }
+
+      // Attach the link property to entity for click
       entity.properties.link = cData.link;
     } else {
-      entity.polygon.material = Cesium.Color.GRAY.withAlpha(0.2);
-      entity.polygon.outline = true;
-      entity.polygon.outlineColor = Cesium.Color.DARKGRAY;
+      if (entity.polygon) {
+        entity.polygon.material = Cesium.Color.GRAY.withAlpha(0.2);
+        entity.polygon.outline = true;
+        entity.polygon.outlineColor = Cesium.Color.DARKGRAY;
+      }
     }
   });
 
-  // Click handler to open links on country click
+  // Handle click event on countries
   const handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
   handler.setInputAction(click => {
     const pickedObject = viewer.scene.pick(click.position);
@@ -66,6 +78,7 @@ Cesium.GeoJsonDataSource.load(geojsonUrl, {
       }
     }
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
 }).otherwise(error => {
-  console.error("Error loading GeoJSON:", error);
+  console.error("GeoJSON load error:", error);
 });
