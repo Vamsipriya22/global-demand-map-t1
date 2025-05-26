@@ -14,16 +14,18 @@
 <body>
 <div id="cesiumContainer"></div>
 <script>
+  // Initialize Cesium Viewer
   const viewer = new Cesium.Viewer('cesiumContainer', {
     baseLayerPicker: false,
     animation: false,
     timeline: false
   });
 
+  // Set background and globe base color (blue ocean)
   viewer.scene.backgroundColor = Cesium.Color.BLACK;
   viewer.scene.globe.baseColor = Cesium.Color.SKYBLUE;
 
-  // Custom country data
+  // Custom country data: color and link
   const countryData = {
     "Albania": {
       color: "#B2D8B2",
@@ -39,7 +41,7 @@
     }
   };
 
-  // Load GeoJSON
+  // Load GeoJSON for countries
   const geojsonUrl = 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json';
 
   Cesium.GeoJsonDataSource.load(geojsonUrl, {
@@ -50,8 +52,8 @@
     viewer.dataSources.add(dataSource);
     viewer.zoomTo(dataSource);
 
+    // Style countries & add links
     dataSource.entities.values.forEach(entity => {
-      // Get country name reliably
       let name = "";
       if (entity.properties && entity.properties.NAME) {
         name = entity.properties.NAME.getValue();
@@ -64,8 +66,8 @@
         entity.polygon.material = Cesium.Color.fromCssColorString(cData.color).withAlpha(0.7);
         entity.polygon.outline = true;
         entity.polygon.outlineColor = Cesium.Color.YELLOW;
-        // Store link on entity for click
-        entity.properties.link = cData.link;
+        // Store link as a Cesium.ConstantProperty so .getValue() works
+        entity.properties.link = new Cesium.ConstantProperty(cData.link);
       } else {
         entity.polygon.material = Cesium.Color.GRAY.withAlpha(0.2);
         entity.polygon.outline = true;
@@ -78,9 +80,12 @@
     handler.setInputAction(click => {
       const pickedObject = viewer.scene.pick(click.position);
       if (Cesium.defined(pickedObject) && pickedObject.id && pickedObject.id.properties) {
-        const link = pickedObject.id.properties.link;
-        if (link) {
-          window.open(link, '_blank');
+        const linkProperty = pickedObject.id.properties.link;
+        if (linkProperty) {
+          const link = linkProperty.getValue();
+          if (link) {
+            window.open(link, '_blank');
+          }
         }
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
