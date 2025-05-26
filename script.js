@@ -11,17 +11,6 @@ const map = new maplibregl.Map({
     minZoom: 1.5
 });
 
-const map = new maplibregl.Map({
-    container: 'map',
-    style: 'https://demotiles.maplibre.org/style.json',
-    center: [0, 20],
-    zoom: 1.5,
-    pitch: 0,
-    bearing: 0,
-    antialias: true,
-    maxZoom: 10,
-    minZoom: 1.5
-});
 
 // Sample demand data with country colors and links
 const countryData = {
