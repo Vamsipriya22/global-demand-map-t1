@@ -7,24 +7,29 @@
   <link href="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
   <style>
     html, body, #cesiumContainer {
-      width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
     }
   </style>
 </head>
 <body>
   <div id="cesiumContainer"></div>
   <script>
-    // Initialize the Cesium Viewer in the container
+    // Initialize Cesium Viewer
     const viewer = new Cesium.Viewer('cesiumContainer', {
-      terrainProvider: Cesium.createWorldTerrain(),
+      imageryProvider: new Cesium.IonImageryProvider({ assetId: 2 }), // Use basic imagery
+      baseLayerPicker: false,
       animation: false,
       timeline: false
     });
 
-    // Optional: disable user interaction if you want a static globe
-    viewer.scene.screenSpaceCameraController.enableRotate = false;
-    viewer.scene.screenSpaceCameraController.enableZoom = false;
-    viewer.scene.screenSpaceCameraController.enableLook = false;
+    // Optional: Disable user interaction for a static globe
+    viewer.scene.screenSpaceCameraController.enableRotate = true;
+    viewer.scene.screenSpaceCameraController.enableZoom = true;
+    viewer.scene.screenSpaceCameraController.enableLook = true;
   </script>
 </body>
 </html>
