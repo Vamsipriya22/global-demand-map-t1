@@ -28,17 +28,22 @@
 
   // Map of countries with their colors and URLs
   const countryData = {
+    "Albania": { "color": "#B2D8B2", "link": "https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?name=&defaultValue=false&viewType=TABLE&areaType=CTY&atch=false&dateTime.dateTime=13.03.2025+00:00|CET|DAY&biddingZone.values=CTY|10YAL-KESH-----5!CTY|10YAL-KESH-----5&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2) "},
+    "Austria": { "color": "#267326", "link": "https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?name=&defaultValue=false&viewType=TABLE&areaType=CTY&atch=false&dateTime.dateTime=13.03.2025+00:00|CET|DAY&biddingZone.values=CTY|10YAT-APG------L!CTY|10YAT-APG------L&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2) "},
+    "Belgium": { "color": "#267326", "link": "https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?name=&defaultValue=false&viewType=TABLE&areaType=CTY&atch=false&dateTime.dateTime=13.03.2025+00:00|CET|DAY&biddingZone.values=CTY|10YBE----------2!CTY|10YBE----------2&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2) "},
+    "Bosnia and Herzegovina": { "color": "#67B367", "link": "https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?name=&defaultValue=false&viewType=TABLE&areaType=CTY&atch=false&dateTime.dateTime=13.03.2025+00:00|CET|DAY&biddingZone.values=CTY|10YBA-JPCC-----D!CTY|10YBA-JPCC-----D&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2) "},
     "Canada": { "color": "#B2D8B2", "link": "https://energy-information.canada.ca/en/resources/high-frequency-electricity-data" },
-    "Australia": { "color": "#B2D8B2", "link": "https://cammesaweb.cammesa.com/" },
+    "Argentina": { "color": "#B2D8B2", "link": "https://cammesaweb.cammesa.com/" },
     "Brazil": { "color": "#0D400D", "link": "https://dados.ons.org.br/dataset/curva-carga" },
     "Chile": { "color": "#0D400D", "link": "https://www.coordinador.cl/operacion/graficos/operacion-real/demanda-real/" },
     "Peru": { "color": "#0D400D", "link": "https://www.coes.org.pe/Portal/portalinformacion/demanda" }
   };
 
+  // Load the GeoJSON for countries
   Cesium.GeoJsonDataSource.load('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json', {
     stroke: Cesium.Color.YELLOW,
     strokeWidth: 1,
-    fill: Cesium.Color.DARKGRAY.withAlpha(0.9) // Default fill color for all countries initially
+    fill: Cesium.Color.DARKGRAY.withAlpha(0.9) // Default fill
   }).then(dataSource => {
     viewer.dataSources.add(dataSource);
     viewer.zoomTo(dataSource);
@@ -46,25 +51,29 @@
     dataSource.entities.values.forEach(entity => {
       const name = entity.properties.NAME?.getValue() || entity.properties.name?.getValue() || entity.name;
 
+      // Log all country names to console
+      console.log('Country name found:', name);
+
       if (entity.polygon) {
         if (name && countryData[name]) {
-          // Country is in countryData: use its color and link
+          // Known country: apply specific color and link
           const c = countryData[name].color;
           entity.polygon.material = Cesium.Color.fromCssColorString(c).withAlpha(1.0);
           entity.properties.link = countryData[name].link;
         } else {
-          // Country not in countryData: dark gray fill with outline
+          // Unknown country: dark gray fill
           entity.polygon.material = Cesium.Color.DARKGRAY.withAlpha(0.9);
           entity.properties.link = null;
         }
         entity.polygon.outline = true;
         entity.polygon.outlineColor = Cesium.Color.YELLOW;
       } else {
-        console.log('Entity without polygon:', entity);
+        // Entities with no polygons will not be visible
+        console.warn('Entity with no polygon:', name);
       }
     });
 
-    // Click handler to open link in new tab
+    // Click handler: open link on country click if available
     const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
     handler.setInputAction(click => {
       const picked = viewer.scene.pick(click.position);
@@ -76,7 +85,6 @@
         }
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-
   }).otherwise(error => {
     console.error('Error loading GeoJSON:', error);
   });
