@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Cesium Globe with Country Colors</title>
+<title>Cesium Globe with Separate Country Colors</title>
 <script src="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Cesium.js"></script>
 <link href="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
 <style>
@@ -12,7 +12,6 @@
 <body>
 <div id="cesiumContainer"></div>
 <script>
-  // Initialize Cesium Viewer
   const viewer = new Cesium.Viewer('cesiumContainer', {
     baseLayerPicker: false,
     animation: false,
@@ -22,48 +21,45 @@
   });
 
   // Ocean color
-  viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString("#ADD8E6"); // Light blue ocean
+  viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString("#B2D8B2"); // Light blue ocean
 
-  // Country data
+  // Country-specific data
   const countryData = {
-    "Albania": { "color": "#B2D8B2", "link": "https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?name=&defaultValue=false&viewType=TABLE&areaType=CTY&atch=false&dateTime.dateTime=13.03.2025+00:00|CET|DAY&biddingZone.values=CTY|10YAL-KESH-----5!CTY|10YAL-KESH-----5&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2)" },
-    "Peru": { "color": "#0D400D", "link": "https://www.coes.org.pe/Portal/portalinformacion/demanda" }
+    "Albania": { "color": "#B2D8B2", "link": "https://example.com/albania" },
+    "Peru": { "color": "#FFCC00", "link": "https://example.com/peru" }
   };
 
-  // Load GeoJSON and assign fills
-  Cesium.GeoJsonDataSource.load(
-    'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json',
-    {
-      stroke: Cesium.Color.YELLOW,
-      strokeWidth: 1,
-      fill: Cesium.Color.fromCssColorString("#AAAAAA").withAlpha(1.0) // Default fill
-    }
-  ).then(dataSource => {
-    viewer.dataSources.add(dataSource);
-    viewer.zoomTo(dataSource);
+  // Load countries GeoJSON
+  Cesium.GeoJsonDataSource.load('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
+    .then(dataSource => {
+      viewer.dataSources.add(dataSource);
+      viewer.zoomTo(dataSource);
 
-    // Assign colors to countries
-    dataSource.entities.values.forEach(entity => {
-      const name = entity.properties.NAME?.getValue() || entity.properties.name?.getValue() || entity.name;
+      // Loop over all features
+      dataSource.entities.values.forEach(entity => {
+        const name = entity.properties.NAME?.getValue() || entity.properties.name?.getValue() || entity.name;
 
-      if (entity.polygon) {
-        // Always set default color first (like fill-color default in Mapbox!)
-        entity.polygon.material = Cesium.Color.fromCssColorString("#AAAAAA").withAlpha(1.0); // Default gray
-        entity.polygon.outline = true;
-        entity.polygon.outlineColor = Cesium.Color.YELLOW;
+        if (entity.polygon) {
+          // 1️⃣ Set default color (gray for all)
+          entity.polygon.material = Cesium.Color.fromCssColorString("#AAAAAA").withAlpha(1.0);
+          entity.polygon.outline = true;
+          entity.polygon.outlineColor = Cesium.Color.YELLOW;
+          entity.polygon.outlineWidth = 1;
 
-        // Override if country is in our data
-        if (name && countryData[name]) {
-          entity.polygon.material = Cesium.Color.fromCssColorString(countryData[name].color).withAlpha(1.0);
-          entity.properties.link = countryData[name].link;
-        } else {
-          entity.properties.link = null;
+          // 2️⃣ If countryData available, override color
+          if (name && countryData[name]) {
+            const colorHex = countryData[name].color;
+            entity.polygon.material = Cesium.Color.fromCssColorString(colorHex).withAlpha(1.0);
+            entity.properties.link = countryData[name].link;
+          } else {
+            entity.properties.link = null;
+          }
         }
-      }
+      });
+    })
+    .otherwise(error => {
+      console.error('Error loading GeoJSON:', error);
     });
-  }).otherwise(error => {
-    console.error('Error loading GeoJSON:', error);
-  });
 
   // Click to open link
   const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
