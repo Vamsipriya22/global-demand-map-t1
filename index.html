@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Cesium Globe with Separate Country Colors</title>
+<title>Cesium Globe with Colored Countries and Ocean</title>
 <script src="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Cesium.js"></script>
 <link href="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
 <style>
-  html, body, #cesiumContainer { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
+  html, body, #cesiumContainer {
+    width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+  }
 </style>
 </head>
 <body>
@@ -14,63 +16,39 @@
 <script>
   const viewer = new Cesium.Viewer('cesiumContainer', {
     baseLayerPicker: false,
-    animation: false,
     timeline: false,
+    animation: false,
     imageryProvider: false,
     globe: new Cesium.Globe(Cesium.Ellipsoid.WGS84)
   });
 
-  // Ocean color
-  viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString("#B2D8B2"); // Light blue ocean
-
-  // Country-specific data
-  const countryData = {
-    "Albania": { "color": "#B2D8B2", "link": "https://example.com/albania" },
-    "Peru": { "color": "#FFCC00", "link": "https://example.com/peru" }
-  };
+  // Set ocean color (globe baseColor)
+  viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString('#444444'); // Dark Gray ocean
 
   // Load countries GeoJSON
-  Cesium.GeoJsonDataSource.load('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
-    .then(dataSource => {
-      viewer.dataSources.add(dataSource);
-      viewer.zoomTo(dataSource);
-
-      // Loop over all features
-      dataSource.entities.values.forEach(entity => {
-        const name = entity.properties.NAME?.getValue() || entity.properties.name?.getValue() || entity.name;
-
-        if (entity.polygon) {
-          // 1️⃣ Set default color (gray for all)
-          entity.polygon.material = Cesium.Color.fromCssColorString("#AAAAAA").withAlpha(1.0);
-          entity.polygon.outline = true;
-          entity.polygon.outlineColor = Cesium.Color.YELLOW;
-          entity.polygon.outlineWidth = 1;
-
-          // 2️⃣ If countryData available, override color
-          if (name && countryData[name]) {
-            const colorHex = countryData[name].color;
-            entity.polygon.material = Cesium.Color.fromCssColorString(colorHex).withAlpha(1.0);
-            entity.properties.link = countryData[name].link;
-          } else {
-            entity.properties.link = null;
-          }
-        }
-      });
-    })
-    .otherwise(error => {
-      console.error('Error loading GeoJSON:', error);
-    });
-
-  // Click to open link
-  const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-  handler.setInputAction(click => {
-    const picked = viewer.scene.pick(click.position);
-    if (Cesium.defined(picked) && picked.id && picked.id.properties && picked.id.properties.link) {
-      const linkValue = picked.id.properties.link;
-      const link = (typeof linkValue.getValue === 'function') ? linkValue.getValue() : linkValue;
-      if (link) window.open(link, '_blank');
+  Cesium.GeoJsonDataSource.load(
+    'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json',
+    {
+      stroke: Cesium.Color.YELLOW,
+      strokeWidth: 2,
+      fill: Cesium.Color.fromCssColorString('#B2D8B2').withAlpha(1.0) // Country fill color (light green)
     }
-  }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+  ).then(function(dataSource) {
+    viewer.dataSources.add(dataSource);
+    viewer.zoomTo(dataSource);
+
+    // Force fill and outline on each polygon entity
+    dataSource.entities.values.forEach(entity => {
+      if (entity.polygon) {
+        entity.polygon.material = Cesium.Color.fromCssColorString('#B2D8B2').withAlpha(1.0);
+        entity.polygon.outline = true;
+        entity.polygon.outlineColor = Cesium.Color.YELLOW;
+        entity.polygon.outlineWidth = 2;
+      }
+    });
+  }).otherwise(function(error) {
+    console.error('Error loading GeoJSON:', error);
+  });
 </script>
 </body>
 </html>
