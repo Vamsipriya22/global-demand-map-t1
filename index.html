@@ -82,34 +82,38 @@
   };
 
   // Load the GeoJSON for countries
-  Cesium.GeoJsonDataSource.load('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json', {
+Cesium.GeoJsonDataSource.load(
+  'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json',
+  {
     stroke: Cesium.Color.YELLOW,
     strokeWidth: 1,
-    fill: Cesium.Color.fromCssColorString("#808080").withAlpha(1.0) // DARK GRAY by default
-  }).then(dataSource => {
-    viewer.dataSources.add(dataSource);
-    viewer.zoomTo(dataSource);
+    fill: Cesium.Color.fromCssColorString("#808080").withAlpha(1.0)
+  }
+).then(dataSource => {
+  viewer.dataSources.add(dataSource);
+  viewer.zoomTo(dataSource);
 
-    // Assign colors and links
-    dataSource.entities.values.forEach(entity => {
-      const name = entity.properties.NAME?.getValue() || entity.properties.name?.getValue() || entity.name;
-      if (entity.polygon) {
-        if (name && countryData[name]) {
-          // Country is in our data; assign color and link
-          const c = countryData[name].color;
-          entity.polygon.material = Cesium.Color.fromCssColorString(c).withAlpha(1.0);
-          entity.polygon.outline = true;
-          entity.polygon.outlineColor = Cesium.Color.YELLOW;
-          entity.properties.link = countryData[name].link;
-        } else {
-          // Country not in our data; assign dark gray
-          entity.polygon.material = Cesium.Color.fromCssColorString("#808080").withAlpha(1.0);
-          entity.polygon.outline = true;
-          entity.polygon.outlineColor = Cesium.Color.YELLOW;
-          entity.properties.link = null;
-        }
+  // Assign colors and links
+  dataSource.entities.values.forEach(entity => {
+    const name = entity.properties.NAME?.getValue() || entity.properties.name?.getValue() || entity.name;
+
+    if (entity.polygon) {
+      entity.polygon.outline = true;
+      entity.polygon.outlineColor = Cesium.Color.YELLOW;
+
+      if (name && countryData[name]) {
+        // Country is in our data; assign color and link
+        const c = countryData[name].color;
+        entity.polygon.material = Cesium.Color.fromCssColorString(c).withAlpha(1.0);
+        entity.properties.link = countryData[name].link;
+      } else {
+        // Country not in our data; assign dark gray
+        entity.polygon.material = Cesium.Color.fromCssColorString("#808080").withAlpha(1.0);
+        entity.properties.link = null;
       }
-    });
+    }
+  });
+});
 
     // Add click handler to open link on country click
     const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
