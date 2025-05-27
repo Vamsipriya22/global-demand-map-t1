@@ -22,51 +22,49 @@
     globe: new Cesium.Globe(Cesium.Ellipsoid.WGS84)
   });
 
-  // Blue ocean background
+  // Ocean background color
   viewer.scene.globe.baseColor = Cesium.Color.DARKGRAY;
   viewer.scene.globe.depthTestAgainstTerrain = true;
 
-  // Map of countries with their colors and URLs
+  // Country data with color and link
   const countryData = {
-    "Albania": { "color": "#B2D8B2", "link": "https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?name=&defaultValue=false&viewType=TABLE&areaType=CTY&atch=false&dateTime.dateTime=13.03.2025+00:00|CET|DAY&biddingZone.values=CTY|10YAL-KESH-----5!CTY|10YAL-KESH-----5&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2) "},
+    "Albania": { "color": "#B2D8B2", "link": "https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?..." },
     "Peru": { "color": "#0D400D", "link": "https://www.coes.org.pe/Portal/portalinformacion/demanda" }
   };
 
-  // Load the GeoJSON for countries
-Cesium.GeoJsonDataSource.load(
-  'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json',
-  {
-    stroke: Cesium.Color.YELLOW,
-    strokeWidth: 1,
-    fill: Cesium.Color.fromCssColorString("#808080").withAlpha(1.0)
-  }
-).then(dataSource => {
-  viewer.dataSources.add(dataSource);
-  viewer.zoomTo(dataSource);
-
-  // Assign colors and links
-  dataSource.entities.values.forEach(entity => {
-    const name = entity.properties.NAME?.getValue() || entity.properties.name?.getValue() || entity.name;
-
-    if (entity.polygon) {
-      entity.polygon.outline = true;
-      entity.polygon.outlineColor = Cesium.Color.YELLOW;
-
-      if (name && countryData[name]) {
-        // Country is in our data; assign color and link
-        const c = countryData[name].color;
-        entity.polygon.material = Cesium.Color.fromCssColorString(c).withAlpha(1.0);
-        entity.properties.link = countryData[name].link;
-      } else {
-        // Country not in our data; assign dark gray
-        entity.polygon.material = Cesium.Color.fromCssColorString("#808080").withAlpha(1.0);
-        entity.properties.link = null;
-      }
+  // Load GeoJSON
+  Cesium.GeoJsonDataSource.load(
+    'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json',
+    {
+      stroke: Cesium.Color.YELLOW,
+      strokeWidth: 1,
+      fill: Cesium.Color.fromCssColorString("#808080").withAlpha(1.0) // Dark gray by default
     }
-  });
-});
+  ).then(dataSource => {
+    viewer.dataSources.add(dataSource);
+    viewer.zoomTo(dataSource);
 
-    // Add click handler to open link on country click
+    // Assign fill color and links
+    dataSource.entities.values.forEach(entity => {
+      const name = entity.properties.NAME?.getValue() || entity.properties.name?.getValue() || entity.name;
+
+      if (entity.polygon) {
+        // Always set polygon outline and fill color
+        entity.polygon.outline = true;
+        entity.polygon.outlineColor = Cesium.Color.YELLOW;
+
+        if (name && countryData[name]) {
+          const c = countryData[name].color;
+          entity.polygon.material = Cesium.Color.fromCssColorString(c).withAlpha(1.0);
+          entity.properties.link = countryData[name].link;
+        } else {
+          entity.polygon.material = Cesium.Color.fromCssColorString("#808080").withAlpha(1.0);
+          entity.properties.link = null;
+        }
+      }
+    });
+
+    // Click handler INSIDE .then() block
     const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
     handler.setInputAction(click => {
       const picked = viewer.scene.pick(click.position);
