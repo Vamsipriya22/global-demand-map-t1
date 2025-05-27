@@ -32,16 +32,16 @@
     {
       stroke: Cesium.Color.YELLOW,
       strokeWidth: 1,
-      fill: Cesium.Color.fromCssColorString("#555555").withAlpha(1.0) // Dark gray fill for all countries
+      fill: Cesium.Color.fromCssColorString("#555555").withAlpha(1.0) // default fill - may not apply without explicit material assignment
     }
   ).then(dataSource => {
     viewer.dataSources.add(dataSource);
     viewer.zoomTo(dataSource);
 
-    // Set polygon fill and outline explicitly for all countries
+    // Explicitly assign fill and outline to polygons
     dataSource.entities.values.forEach(entity => {
       if (entity.polygon) {
-        entity.polygon.material = Cesium.Color.fromCssColorString("#555555").withAlpha(1.0); // dark gray fill
+        entity.polygon.material = Cesium.Color.fromCssColorString("#555555").withAlpha(1.0);
         entity.polygon.outline = true;
         entity.polygon.outlineColor = Cesium.Color.YELLOW;
       }
